@@ -6,6 +6,7 @@
   "url": "https://github.com/hunterjm/hassio-addon-xboxone",
   "startup": "before",
   "boot": "auto",
+  "image": "hunterjm/hassio-{arch}-xboxone",
   "host_network": true,
   "map": ["config:rw"],
   "options": {
