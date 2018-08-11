@@ -50,6 +50,7 @@ This add-on creates a custom component in your hassio instance.  This component 
 1. Turn on all of the Xboxes you wish to be discovered.
 1. View the device list in this plugin: [hassio.local:5557/devices](http://hassio.local:5557/devices)
 1. Create the `media_player` configuration using the `liveid` as the value for `device`.
+1. Restart Home Assistant to pick up the config change.
 
 Example `configuration.yaml`:
 
