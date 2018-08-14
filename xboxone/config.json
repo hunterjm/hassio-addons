@@ -1,6 +1,6 @@
 {
   "name": "Xbox One",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "slug": "xboxone",
   "description": "Control your Xbox One from your Home Assistant device",
   "url": "https://github.com/hunterjm/hassio-addons/tree/master/xboxone",
