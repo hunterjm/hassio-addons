@@ -9,7 +9,7 @@ COPY xboxone.py /
 RUN chmod a+x /run.sh
 
 # Install requirements for add-on
-RUN apk add --no-cache jq gcc musl-dev python3-dev libffi-dev openssl-dev python3 && \
+RUN apk add --no-cache jq git gcc musl-dev python3-dev libffi-dev openssl-dev python3 && \
     python3 -m ensurepip && \
     rm -r /usr/lib/python*/ensurepip && \
     pip3 install --upgrade pip setuptools && \
@@ -17,6 +17,6 @@ RUN apk add --no-cache jq gcc musl-dev python3-dev libffi-dev openssl-dev python
     if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
     rm -r /root/.cache
 
-RUN pip3 install xbox-smartglass-rest==0.9.3
+RUN pip3 install git+git://github.com/OpenXbox/xbox-smartglass-rest-python.git@f90adf42ca575af0fd3e47a95402fbaf7944e9b7
 
 CMD [ "/run.sh" ]

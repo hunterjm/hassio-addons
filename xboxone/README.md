@@ -6,6 +6,20 @@ Xbox One support for Home Assistant
 
 This add-on is a packaged version of the [Xbox One SmartGlass RESTful server](https://github.com/OpenXbox/xbox-smartglass-rest-python) and a Home Assistant [Xbox One custom component](https://github.com/tuxuser/home-assistant-xboxone).  It allows you to easily setup and configure controlling your Xbox from Home Assistant.
 
+## Features
+
+This component replicates many of the features of the Xbox App.  If it can't be done there, it can't be done here.
+
+- Power On/Off
+- Display name and image of current Game/App
+  - Requires auth with Xbox Live
+- Media Controls: Play/Pause & Seek
+  - Supported apps only
+- Volume Controls: Up/Down/Mute
+  - Requires `Device Control` to be cofigured in `Settings` on the Xbox
+- Source Selection: Launch Pinned Apps from within Home Assistant
+  - Apps only, Games not supported
+
 ## Installation
 
 The installation of this add-on is pretty straightforward and not different in
@@ -13,35 +27,12 @@ comparison to installing any other Hass.io add-on.
 
 1. [Add our Hass.io add-ons repository](https://github.com/hunterjm/hassio-addons) to your Hass.io instance.
 1. Install the "Xbox One" add-on.
-1. Put your Xbox Live account details into the `email`/`password` options.
-1. Click the `Save` button to store your credentials.
 1. Start the "Xbox One" add-on.
 1. Check the logs of the "Xbox One" add-on to see if everything went well.
 1. Surf to your Hass.io instance and use port `5557`
     (e.g. `http://hassio.local:5557`).
-
-## Add-on Configuration
-
-**Note**: _Remember to restart the add-on when the configuration is changed._
-
-Example add-on configuration:
-
-```json
-{
-  "email": "name@hass.io",
-  "password": "changeme"
-}
-```
-
-**Note**: _This is just an example, don't copy and past it! Create your own!_
-
-### Option: `email`
-
-The email address you use to login to your Xbox Live account.
-
-### Option: `password`
-
-The password you use to login to your Xbox Live account.
+1. Authenticate with Xbox Live by going to [/auth/oauth](http://hassio.local:5557/auth/oauth)
+    and following the directions.
 
 ## Home Assistant Configuration
 
@@ -74,6 +65,14 @@ The LiveID of your Xbox One.  It can be found in `/devices` endpoint.  Once this
 ### Option: `name`
 
 The friendly name for this Xbox which will appear in Home Assistant.
+
+### Option: `authentication`
+
+**Default:** `true`
+
+Set to `false` if you have multiple consoles on your network and have issues with getting signed out.  Future features may require an authenticated connection with the console.
+
+**Note:** _This refers to an authenticated connection with the console.  You will still need to [authenticate with Xbox Live](http://hassio.local:5557/auth/oauth) to have the most useful features enabled (i.e. Friendly app names, images, and Source selection)._
 
 ## Authors & Contributors
 
