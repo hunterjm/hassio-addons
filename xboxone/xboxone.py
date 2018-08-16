@@ -33,7 +33,7 @@ SUPPORT_XBOXONE = SUPPORT_PAUSE | \
     SUPPORT_NEXT_TRACK | SUPPORT_SELECT_SOURCE | SUPPORT_PLAY | \
     SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE
 
-REQUIRED_SERVER_VERSION = '0.9.4'
+REQUIRED_SERVER_VERSION = '0.9.5'
 
 DEFAULT_SSL = False
 DEFAULT_HOST = 'localhost'
@@ -71,7 +71,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         else:
             add_devices([XboxOneDevice(base_url, liveid, name, auth)])
     except requests.exceptions.RequestException:
-        _LOGGER.error("Could not connect to firetv-server at %s", base_url)
+        _LOGGER.error("Could not connect to xbox-smartglass-rest server at %s", base_url)
 
 
 class XboxOne:
