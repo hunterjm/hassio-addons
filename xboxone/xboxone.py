@@ -13,7 +13,6 @@ import logging
 import requests
 import voluptuous as vol
 from urllib.parse import urljoin
-from distutils.version import LooseVersion
 
 from homeassistant.components.media_player import (
     SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK, PLATFORM_SCHEMA,
@@ -66,8 +65,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     try:
         version_url = urljoin(base_url, '/versions')
         resp = requests.get(version_url).json()
-        if LooseVersion(resp['versions']['xbox-smartglass-rest']) < LooseVersion(REQUIRED_SERVER_VERSION):
-            _LOGGER.error("Invalid xbox-smartglass-rest version. Required: >= %s", REQUIRED_SERVER_VERSION)
+        if resp['versions']['xbox-smartglass-rest'] != REQUIRED_SERVER_VERSION:
+            _LOGGER.error("Invalid xbox-smartglass-rest version. Required: %s", REQUIRED_SERVER_VERSION)
         else:
             add_devices([XboxOneDevice(base_url, liveid, name, auth)])
     except requests.exceptions.RequestException:
