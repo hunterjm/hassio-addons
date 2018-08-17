@@ -39,7 +39,7 @@ comparison to installing any other Hass.io add-on.
 This add-on creates a custom component in your hassio instance.  This component needs to be configured in order to display your Xbox in Home Assistant.  Follow the below steps to get started.
 
 1. Turn on all of the Xboxes you wish to be discovered.
-1. View the device list in this plugin: [hassio.local:5557/devices](http://hassio.local:5557/devices)
+1. View the device list in this plugin: [hassio.local:5557/device](http://hassio.local:5557/device)
 1. Create the `media_player` configuration using the `liveid` as the value for `device`.
 1. Restart Home Assistant to pick up the config change.
 
@@ -60,7 +60,7 @@ media_player:
 
 ### Option: `device`
 
-The LiveID of your Xbox One.  It can be found in `/devices` endpoint.  Once this addon is up and running [click here](http://hassio.local:5557/devices).
+The LiveID of your Xbox One.  It can be found in `/device` endpoint.  Once this addon is up and running [click here](http://hassio.local:5557/device).
 
 ### Option: `name`
 
