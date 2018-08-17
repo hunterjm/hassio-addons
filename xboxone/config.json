@@ -1,6 +1,6 @@
 {
   "name": "Xbox One",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "slug": "xboxone",
   "description": "Control your Xbox One from your Home Assistant device",
   "url": "https://github.com/hunterjm/hassio-addons/tree/master/xboxone",
@@ -9,12 +9,6 @@
   "image": "hunterjm/hassio-{arch}-xboxone",
   "host_network": true,
   "map": ["config:rw"],
-  "options": {
-      "email": "",
-      "password": ""
-  },
-  "schema": {
-      "email": "str",
-      "password": "str"
-  }
+  "options": {},
+  "schema": {}
 }
