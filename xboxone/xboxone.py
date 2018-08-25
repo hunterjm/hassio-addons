@@ -440,10 +440,7 @@ class XboxOneDevice(MediaPlayerDevice):
     def supported_features(self):
         """Flag media player features that are supported."""
         active_support = SUPPORT_XBOXONE
-        if self.state not in [STATE_PLAYING, STATE_PAUSED] \
-            and (self._xboxone.active_app_type not in ['Application', 'App'] or self._xboxone.active_app == 'Home'):
-            active_support &= ~SUPPORT_PLAY & ~SUPPORT_PAUSE & ~SUPPORT_NEXT_TRACK & ~SUPPORT_PREVIOUS_TRACK
-        if not self._xboxone.volume_controls:
+        if self._xboxone.connected and not self._xboxone.volume_controls:
             active_support &= ~SUPPORT_VOLUME_MUTE & ~SUPPORT_VOLUME_STEP
         return active_support
 
@@ -461,7 +458,10 @@ class XboxOneDevice(MediaPlayerDevice):
         if playback_state:
             state = playback_state
         elif self._xboxone.connected or self._xboxone.available:
-            state = STATE_UNKNOWN
+            if self._xboxone.active_app_type in ['Application', 'App']:
+                state = STATE_PLAYING
+            else:
+                state = STATE_ON
         else:
             state = STATE_OFF
 
@@ -515,6 +515,11 @@ class XboxOneDevice(MediaPlayerDevice):
     def source_list(self):
         """Return a list of running apps."""
         return list(self._xboxone.all_apps.keys())
+
+    @property
+    def is_volume_muted(self):
+        """Boolean if volume is currently muted."""
+        return False
 
     def update(self):
         """Get the latest date and update device state."""
