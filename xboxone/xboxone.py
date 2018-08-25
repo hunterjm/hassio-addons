@@ -314,6 +314,36 @@ class XboxOne:
 
         return response
 
+    def ir_command(self, device, command):
+        try:
+            response = self.get('/device/<liveid>/ir').json()
+            if not response.get('success'):
+                return None
+        except requests.exceptions.RequestException:
+            _LOGGER.error('Failed to get enabled media commands for {0}'.format(self.liveid))
+            return None
+        except Exception as e:
+            _LOGGER.error('Unknown Error: %s', e)
+
+        enabled_commands = response.get(device).get('buttons')
+        if command not in enabled_commands:
+            _LOGGER.error('Provided command {0} not enabled for current ir device'.format(command))
+            return None
+        else:
+            button_url = enabled_commands.get(command).get('url')
+
+        try:
+            response = self.get('{0}'.format(button_url)).json()
+            if not response.get('success'):
+                return None
+        except requests.exceptions.RequestException:
+            _LOGGER.error('Failed to get enabled ir commands for {0}'.format(self.liveid))
+            return None
+        except Exception as e:
+            _LOGGER.error('Unknown Error: %s', e)
+
+        return response
+
     def media_command(self, command):
         try:
             response = self.get('/device/<liveid>/media').json()
@@ -562,11 +592,17 @@ class XboxOneDevice(MediaPlayerDevice):
 
     def media_previous_track(self):
         """Send previous track command."""
-        self._xboxone.media_command('prev_track')
+        if self._xboxone.active_app == 'TV':
+            self._xboxone.ir_command('stb','btn.ch_down')
+        else:
+            self._xboxone.media_command('prev_track')
 
     def media_next_track(self):
         """Send next track command."""
-        self._xboxone.media_command('next_track')
+        if self._xboxone.active_app == 'TV':
+            self._xboxone.ir_command('stb','btn.ch_up')
+        else:
+            self._xboxone.media_command('next_track')
 
     def select_source(self, source):
         """Select input source."""
