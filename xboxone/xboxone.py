@@ -30,7 +30,7 @@ _LOGGER = logging.getLogger(__name__)
 SUPPORT_XBOXONE = SUPPORT_PAUSE | \
     SUPPORT_TURN_ON | SUPPORT_TURN_OFF | SUPPORT_PREVIOUS_TRACK | \
     SUPPORT_NEXT_TRACK | SUPPORT_SELECT_SOURCE | SUPPORT_PLAY | \
-    SUPPORT_PAUSE | SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE
+    SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE
 
 REQUIRED_SERVER_VERSION = '0.9.5'
 
@@ -420,7 +420,6 @@ class XboxOneDevice(MediaPlayerDevice):
         self._state = STATE_UNKNOWN
         self._running_apps = None
         self._current_app = None
-        self._muted = False
 
     @property
     def name(self):
@@ -441,12 +440,8 @@ class XboxOneDevice(MediaPlayerDevice):
     def supported_features(self):
         """Flag media player features that are supported."""
         active_support = SUPPORT_XBOXONE
-        if self._xboxone.connected:
-            if self.state not in [STATE_PLAYING, STATE_PAUSED] \
-                and (self._xboxone.active_app_type not in ['Application', 'App'] or self._xboxone.active_app == 'Home'):
-                active_support &= ~SUPPORT_PLAY & ~SUPPORT_PAUSE & ~SUPPORT_NEXT_TRACK & ~SUPPORT_PREVIOUS_TRACK
-            if not self._xboxone.volume_controls:
-                active_support &= ~SUPPORT_VOLUME_MUTE & ~SUPPORT_VOLUME_STEP
+        if self._xboxone.connected and not self._xboxone.volume_controls:
+            active_support &= ~SUPPORT_VOLUME_MUTE & ~SUPPORT_VOLUME_STEP
         return active_support
 
     @property
@@ -521,7 +516,7 @@ class XboxOneDevice(MediaPlayerDevice):
     @property
     def is_volume_muted(self):
         """Boolean if volume is currently muted."""
-        return self._muted
+        return False
 
     def update(self):
         """Get the latest date and update device state."""
@@ -537,10 +532,6 @@ class XboxOneDevice(MediaPlayerDevice):
 
     def mute_volume(self, mute):
         """Mute the volume."""
-        if self._muted == False:
-            self._muted = True
-        else:
-            self._muted = False
         self._xboxone.volume_command('mute')
 
     def volume_up(self):
