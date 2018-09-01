@@ -231,7 +231,7 @@ class XboxOne:
         try:
             response = self.get('/device/<liveid>').json()
             if not response.get('success'):
-                _LOGGER.error('Console {0} not available'.format(self.liveid))
+                _LOGGER.debug('Console {0} not available'.format(self.liveid))
                 return None
         except requests.exceptions.RequestException:
             _LOGGER.error('Unreachable device info /<liveid> endpoint')
@@ -413,12 +413,16 @@ class XboxOne:
         """
         Enumerate devices and refresh status info
         """
+        self._check_authentication()
         self._refresh_devicelist()
 
         device_info = self._get_device_info()
         if not device_info or device_info.get('device_status') == 'Unavailable':
             self._available = False
             self._connected = False
+            self._console_status = None
+            self._media_status = None
+            self._volume_controls = None
         else:
             self._available = True
 
@@ -472,7 +476,7 @@ class XboxOneDevice(MediaPlayerDevice):
         active_support = SUPPORT_XBOXONE
         if self.state not in [STATE_PLAYING, STATE_PAUSED] \
             and (self._xboxone.active_app_type not in ['Application', 'App'] or self._xboxone.active_app == 'Home'):
-            active_support &= ~SUPPORT_PLAY & ~SUPPORT_PAUSE & ~SUPPORT_NEXT_TRACK & ~SUPPORT_PREVIOUS_TRACK
+            active_support &= ~SUPPORT_NEXT_TRACK & ~SUPPORT_PREVIOUS_TRACK
         if not self._xboxone.volume_controls:
             active_support &= ~SUPPORT_VOLUME_MUTE & ~SUPPORT_VOLUME_STEP
         return active_support
@@ -481,9 +485,9 @@ class XboxOneDevice(MediaPlayerDevice):
     def state(self):
         """Return the state of the player."""
         playback_state = {
-            'Closed': STATE_UNKNOWN,
-            'Changing': STATE_UNKNOWN,
-            'Stopped': STATE_UNKNOWN,
+            'Closed': STATE_IDLE,
+            'Changing': STATE_IDLE,
+            'Stopped': STATE_IDLE,
             'Playing': STATE_PLAYING,
             'Paused': STATE_PAUSED
         }.get(self._xboxone.media_playback_state)
@@ -491,7 +495,10 @@ class XboxOneDevice(MediaPlayerDevice):
         if playback_state:
             state = playback_state
         elif self._xboxone.connected or self._xboxone.available:
-            state = STATE_UNKNOWN
+            if self._xboxone.active_app_type not in ['Application', 'App'] or self._xboxone.active_app == 'Home':
+                state = STATE_ON
+            else:
+                state = STATE_UNKNOWN
         else:
             state = STATE_OFF
 
