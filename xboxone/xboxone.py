@@ -608,4 +608,9 @@ class XboxOneDevice(MediaPlayerDevice):
 
     def select_source(self, source):
         """Select input source."""
-        self._xboxone.launch_title(source)
+        if source.isdigit():
+            digits = map(int, str(source))
+            for digit in digits:
+                self._xboxone.ir_command('stb','btn.digit_'+str(digit))
+        else:
+            self._xboxone.launch_title(source)
