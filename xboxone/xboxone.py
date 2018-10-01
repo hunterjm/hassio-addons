@@ -21,7 +21,8 @@ from homeassistant.components.media_player import (
     MEDIA_TYPE_MUSIC, MEDIA_TYPE_VIDEO, MEDIA_TYPE_TVSHOW, MEDIA_TYPE_CHANNEL)
 from homeassistant.const import (
     STATE_IDLE, STATE_OFF, STATE_PAUSED, STATE_PLAYING, STATE_UNKNOWN, STATE_ON,
-    CONF_HOST, CONF_PORT, CONF_SSL, CONF_NAME, CONF_DEVICE, CONF_AUTHENTICATION)
+    CONF_HOST, CONF_PORT, CONF_SSL, CONF_NAME, CONF_DEVICE, CONF_AUTHENTICATION,
+    CONF_IP_ADDRESS)
 import homeassistant.util.dt as dt_util
 import homeassistant.helpers.config_validation as cv
 
@@ -42,6 +43,7 @@ DEFAULT_AUTHENTICATION = True
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_DEVICE): cv.string,
+    vol.Optional(CONF_IP_ADDRESS, default=None): cv.string,
     vol.Optional(CONF_HOST, default=DEFAULT_HOST): cv.string,
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
     vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port,
@@ -57,6 +59,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     host = config.get(CONF_HOST)
     port = config.get(CONF_PORT)
     liveid = config.get(CONF_DEVICE)
+    ip = config.get(CONF_IP_ADDRESS)
     auth = config.get(CONF_AUTHENTICATION)
 
     proto = 'https' if ssl else 'http'
@@ -68,15 +71,16 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         if resp['versions']['xbox-smartglass-rest'] != REQUIRED_SERVER_VERSION:
             _LOGGER.error("Invalid xbox-smartglass-rest version. Required: %s", REQUIRED_SERVER_VERSION)
         else:
-            add_devices([XboxOneDevice(base_url, liveid, name, auth)])
+            add_devices([XboxOneDevice(base_url, liveid, ip, name, auth)])
     except requests.exceptions.RequestException:
         _LOGGER.error("Could not connect to xbox-smartglass-rest server at %s", base_url)
 
 
 class XboxOne:
-    def __init__(self, base_url, liveid, auth):
+    def __init__(self, base_url, liveid, ip, auth):
         self.base_url = base_url
         self.liveid = liveid
+        self._ip = ip
         self._auth = auth
         self._available = False
         self._connected = False
@@ -205,7 +209,10 @@ class XboxOne:
         return False
 
     def _refresh_devicelist(self):
-        self.get('/device')
+        params = None
+        if self._ip:
+            params = { 'addr': self._ip }
+        self.get('/device', params=params)
 
     def _connect(self):
         if self._auth and not self._check_authentication():
@@ -446,9 +453,9 @@ class XboxOne:
 class XboxOneDevice(MediaPlayerDevice):
     """Representation of an Xbox One device on the network."""
 
-    def __init__(self, base_url, liveid, name, auth):
+    def __init__(self, base_url, liveid, ip, name, auth):
         """Initialize the Xbox One device."""
-        self._xboxone = XboxOne(base_url, liveid, auth)
+        self._xboxone = XboxOne(base_url, liveid, ip, auth)
         self._name = name
         self._liveid = liveid
         self._state = STATE_UNKNOWN
