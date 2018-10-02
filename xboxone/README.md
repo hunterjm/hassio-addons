@@ -26,13 +26,50 @@ The installation of this add-on is pretty straightforward and not different in
 comparison to installing any other Hass.io add-on.
 
 1. [Add our Hass.io add-ons repository](https://github.com/hunterjm/hassio-addons) to your Hass.io instance.
-1. Install the "Xbox One" add-on.
-1. Start the "Xbox One" add-on.
-1. Check the logs of the "Xbox One" add-on to see if everything went well.
-1. Surf to your Hass.io instance and use port `5557`
+2. Install the "Xbox One" add-on.
+3. Start the "Xbox One" add-on.
+4. Check the logs of the "Xbox One" add-on to see if everything went well.
+5. Surf to your Hass.io instance and use port `5557`
     (e.g. `http://hassio.local:5557`).
-1. Authenticate with Xbox Live by going to [/auth/oauth](http://hassio.local:5557/auth/oauth)
+6. Authenticate with Xbox Live by going to [/auth/oauth](http://hassio.local:5557/auth/oauth)
     and following the directions.
+    
+## Manual Installation
+1. Enter your home assistant python virtual-environment.
+2. Execute `pip install xbox-smartglass-rest`.
+3. Create a service to autostart the server (e.g. for Systemd).
+4. Enable / start the service.
+5. Copy `xboxone.py` to `<hass config path>/custom_components/media_player/xboxone.py`.
+6. Proceed with __Installation__ step 5.
+
+### Systemd service example
+
+File location: `/etc/systemd/system/xbox-smartglass-rest@homeassistant.service`
+
+__NOTE:__ This assumes running the service as user `homeassistant`.
+If you want to run the server with a different user, change
+the filename to: `xbox-smartglass-rest@<username>.service`!
+
+Edit `ExecStart` to your needs!
+
+```
+#
+# Service file for systems with systemd to run Xbox One SmartGlass REST server.
+#
+
+[Unit]
+Description=Xbox One SmartGlass REST for %i
+After=network.target
+
+[Service]
+Type=simple
+User=%i
+ExecStart=/path/to/bin/inside/venv/xbox-rest-server
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target
+```
 
 ## Home Assistant Configuration
 
