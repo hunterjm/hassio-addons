@@ -231,6 +231,7 @@ class XboxOne:
             return False
         except Exception as e:
             _LOGGER.error('Unknown Error: %s', e)
+            return None
 
         return True
 
@@ -245,6 +246,7 @@ class XboxOne:
             return None
         except Exception as e:
             _LOGGER.error('Unknown Error: %s', e)
+            return None
 
         return response['device']
 
@@ -259,6 +261,7 @@ class XboxOne:
             return None
         except Exception as e:
             _LOGGER.error('Unknown Error: %s', e)
+            return None
 
         return response['console_status']
 
@@ -273,6 +276,7 @@ class XboxOne:
             return None
         except Exception as e:
             _LOGGER.error('Unknown Error: %s', e)
+            return None
 
         return response['media_status']
 
@@ -287,6 +291,7 @@ class XboxOne:
             return None
         except Exception as e:
             _LOGGER.error('Unknown Error: %s', e)
+            return None
 
         controls = response.get('avr') or response.get('tv')
         if not controls:
@@ -361,6 +366,7 @@ class XboxOne:
             return None
         except Exception as e:
             _LOGGER.error('Unknown Error: %s', e)
+            return None
 
         enabled_commands = response.get('commands')
         if command not in enabled_commands:
@@ -376,6 +382,7 @@ class XboxOne:
             return None
         except Exception as e:
             _LOGGER.error('Unknown Error: %s', e)
+            return None
 
         return response
 
@@ -397,6 +404,7 @@ class XboxOne:
             return None
         except Exception as e:
             _LOGGER.error('Unknown Error: %s', e)
+            return None
 
         return response
 
@@ -413,6 +421,7 @@ class XboxOne:
             return None
         except Exception as e:
             _LOGGER.error('Unknown Error: %s', e)
+            return None
 
         return response
 
