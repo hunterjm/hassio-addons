@@ -43,7 +43,7 @@ DEFAULT_AUTHENTICATION = True
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_DEVICE): cv.string,
-    vol.Optional(CONF_IP_ADDRESS, default=None): cv.string,
+    vol.Optional(CONF_IP_ADDRESS, default='0.0.0.0'): cv.string,
     vol.Optional(CONF_HOST, default=DEFAULT_HOST): cv.string,
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
     vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port,
