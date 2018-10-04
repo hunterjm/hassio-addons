@@ -99,6 +99,10 @@ media_player:
 
 The LiveID of your Xbox One.  It can be found in `/device` endpoint.  Once this addon is up and running [click here](http://hassio.local:5557/device).
 
+### Option: `ip_address`
+
+The IP Address of your Xbox One.  Useful if your xbox lives on a separate subnet.
+
 ### Option: `name`
 
 The friendly name for this Xbox which will appear in Home Assistant.
