@@ -82,6 +82,7 @@ class XboxOne:
         self._media_status = None
         self._console_status = None
         self._volume_controls = None
+        self._pins = None
 
     def get(self, endpoint, *args, **kwargs):
         endpoint = endpoint.replace('<liveid>', self.liveid)
@@ -106,7 +107,19 @@ class XboxOne:
 
     @property
     def volume_controls(self):
-        return self._volume_controls
+        volume_controls = self._volume_controls
+        if not volume_controls:
+            return None
+
+        controls = volume_controls.get('avr') or volume_controls.get('tv')
+        if not controls:
+            return None
+
+        return {
+            'mute': controls['buttons']['btn.vol_mute']['url'],
+            'up': controls['buttons']['btn.vol_up']['url'],
+            'down': controls['buttons']['btn.vol_down']['url'],
+        }
 
     @property
     def media_playback_state(self):
@@ -169,14 +182,17 @@ class XboxOne:
             'Home': 'ms-xbox-dashboard://home?view=home',
             'TV': 'ms-xbox-livetv://'
         }
-        if self._check_authentication():
-            response = self.get('/web/pins').json()
+        if self._check_authentication() and not self._pins:
+            self._pins = self.get('/web/pins').json()
+
+        if self._pins:
             try:
-                for item in response['ListItems']:
+                for item in self._pins['ListItems']:
                     if item['Item']['ContentType'] == 'DApp' and item['Item']['Title'] not in apps.keys():
                         apps[item['Item']['Title']] = 'appx:{0}!App'.format(item['Item']['ItemId'])
             except:
                 pass
+
         if self.console_status:
             active_titles = self.console_status.get('active_titles')
             for app in active_titles:
@@ -258,7 +274,7 @@ class XboxOne:
             _LOGGER.error('Unknown Error: %s', e)
             return None
 
-        return response['console_status']
+        self._console_status = response['console_status']
 
     def _get_media_status(self):
         try:
@@ -273,9 +289,12 @@ class XboxOne:
             _LOGGER.error('Unknown Error: %s', e)
             return None
 
-        return response['media_status']
+        self._media_status = response['media_status']
 
     def _get_volume_controls(self):
+        if self._volume_controls:
+            return None
+
         try:
             response = self.get('/device/<liveid>/ir').json()
             if not response.get('success'):
@@ -288,14 +307,7 @@ class XboxOne:
             _LOGGER.error('Unknown Error: %s', e)
             return None
 
-        controls = response.get('avr') or response.get('tv')
-        if not controls:
-            return None
-        return {
-            'mute': controls['buttons']['btn.vol_mute']['url'],
-            'up': controls['buttons']['btn.vol_up']['url'],
-            'down': controls['buttons']['btn.vol_down']['url'],
-        }
+        self._volume_controls = response
 
     def poweron(self):
         try:
@@ -469,9 +481,9 @@ class XboxOne:
                     self._connected = True
 
         if self.available and self.connected:
-            self._console_status = self._get_console_status()
-            self._media_status = self._get_media_status()
-            self._volume_controls = self._get_volume_controls()
+            self._get_console_status()
+            self._get_media_status()
+            self._get_volume_controls()
 
 
 class XboxOneDevice(MediaPlayerDevice):
