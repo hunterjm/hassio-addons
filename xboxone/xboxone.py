@@ -65,19 +65,14 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     proto = 'https' if ssl else 'http'
     base_url = '{0}://{1}:{2}'.format(proto, host, port)
 
-    try:
-        version_url = urljoin(base_url, '/versions')
-        resp = requests.get(version_url).json()
-        if resp['versions']['xbox-smartglass-rest'] != REQUIRED_SERVER_VERSION:
-            _LOGGER.error("Invalid xbox-smartglass-rest version. Required: %s", REQUIRED_SERVER_VERSION)
-        else:
-            add_devices([XboxOneDevice(base_url, liveid, ip, name, auth)])
-    except requests.exceptions.RequestException:
-        _LOGGER.error("Could not connect to xbox-smartglass-rest server at %s", base_url)
+    add_devices([XboxOneDevice(base_url, liveid, ip, name, auth)])
 
 
 class XboxOne:
     def __init__(self, base_url, liveid, ip, auth):
+        self.is_server_up = False
+        self.is_server_correct_version = True
+
         self.base_url = base_url
         self.liveid = liveid
         self._ip = ip
@@ -425,10 +420,30 @@ class XboxOne:
 
         return response
 
+    def _check_server(self):
+        if not self.is_server_correct_version:
+            return False
+
+        try:
+            resp = self.get('/versions').json()
+            if resp['versions']['xbox-smartglass-rest'] != REQUIRED_SERVER_VERSION:
+                self.is_server_correct_version = False
+                _LOGGER.error("Invalid xbox-smartglass-rest version. Required: %s", REQUIRED_SERVER_VERSION)
+        except requests.exceptions.RequestException:
+            self.is_server_up = False
+            return False
+
+        self.is_server_up = True
+        return True
+
     def refresh(self):
         """
         Enumerate devices and refresh status info
         """
+
+        if not self._check_server():
+            return
+
         self._check_authentication()
         self._refresh_devicelist()
 
