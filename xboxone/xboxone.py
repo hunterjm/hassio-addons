@@ -11,8 +11,12 @@ CREDITS:
 import logging
 
 import requests
+import binascii
 import voluptuous as vol
 from urllib.parse import urljoin
+from cryptography import x509
+from cryptography.x509.oid import NameOID
+from cryptography.hazmat.backends import default_backend
 
 from homeassistant.components.media_player import (
     SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK, PLATFORM_SCHEMA,
@@ -55,18 +59,38 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the Xbox One platform."""
-    name = config.get(CONF_NAME)
     ssl = config.get(CONF_SSL)
     host = config.get(CONF_HOST)
     port = config.get(CONF_PORT)
-    liveid = config.get(CONF_DEVICE)
-    ip = config.get(CONF_IP_ADDRESS)
     auth = config.get(CONF_AUTHENTICATION)
+
+    new_hosts = []
 
     proto = 'https' if ssl else 'http'
     base_url = '{0}://{1}:{2}'.format(proto, host, port)
 
-    add_devices([XboxOneDevice(base_url, liveid, ip, name, auth)])
+    # Parse discovery info
+    if discovery_info is not None:
+        di_name = discovery_info.get('name')
+        cert_str = discovery_info.get('certificate')
+
+        cert = binascii.unhexlify(cert_str)
+        cert = x509.load_der_x509_certificate(cert, default_backend())
+        di_liveid = cert.subject.get_attributes_for_oid(
+            NameOID.COMMON_NAME)[0].value
+
+        new_hosts.append(XboxOneDevice(base_url, di_liveid, '', di_name, auth))
+
+    # Parse configuration entry
+    if config.get(CONF_DEVICE):
+        name = config.get(CONF_NAME)
+        liveid = config.get(CONF_DEVICE)
+        ip = config.get(CONF_IP_ADDRESS)
+
+        new_hosts.append(XboxOneDevice(base_url, liveid, ip, name, auth))
+
+
+    add_devices(new_hosts)
 
 
 class XboxOne:
