@@ -33,7 +33,7 @@ SUPPORT_XBOXONE = SUPPORT_PAUSE | \
     SUPPORT_NEXT_TRACK | SUPPORT_SELECT_SOURCE | SUPPORT_PLAY | \
     SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE
 
-REQUIRED_SERVER_VERSION = '0.9.6'
+REQUIRED_SERVER_VERSION = '0.9.8'
 
 DEFAULT_SSL = False
 DEFAULT_HOST = 'localhost'
@@ -312,7 +312,11 @@ class XboxOne:
 
     def poweron(self):
         try:
-            response = self.get('/device/<liveid>/poweron').json()
+            url = '/device/<liveid>/poweron'
+            params = None
+            if self._ip:
+                params = { 'addr': self._ip }
+            response = self.get(url, params=params).json()
             if not response.get('success'):
                 _LOGGER.error('Failed to poweron {0}'.format(self.liveid))
                 return None
