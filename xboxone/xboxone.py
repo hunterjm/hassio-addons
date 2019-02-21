@@ -545,7 +545,7 @@ class XboxOneDevice(MediaPlayerDevice):
         if playback_state:
             state = playback_state
         elif self._xboxone.connected or self._xboxone.available:
-            if self._xboxone.active_app_type not in ['Application', 'App'] or self._xboxone.active_app == 'Home':
+            if self._xboxone.active_app_type in ['Application', 'App'] or self._xboxone.active_app == 'Home':
                 state = STATE_ON
             else:
                 state = STATE_UNKNOWN
