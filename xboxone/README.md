@@ -89,7 +89,7 @@ media_player:
     name: Living Room Xbox One
 ```
 
-**Note**: _This is just an example, don't copy and past it! Create your own!_
+**Note**: _This is just an example, don't copy and paste it! Create your own!_
 
 ### Option: `platform`
 
