@@ -12,7 +12,7 @@ NOTE:
 - Installing this component under Home Assistant 0.88 and onward requires this component to be placed in /config/custom_components/xboxone/media_player.py
 """
 import logging
-
+import functools
 import requests
 import voluptuous as vol
 from urllib.parse import urljoin
@@ -45,7 +45,7 @@ SUPPORT_XBOXONE = SUPPORT_PAUSE | \
     SUPPORT_NEXT_TRACK | SUPPORT_SELECT_SOURCE | SUPPORT_PLAY | \
     SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE
 
-REQUIRED_SERVER_VERSION = '0.9.6'
+REQUIRED_SERVER_VERSION = '0.9.8'
 
 DEFAULT_SSL = False
 DEFAULT_HOST = 'localhost'
@@ -324,7 +324,11 @@ class XboxOne:
 
     def poweron(self):
         try:
-            response = self.get('/device/<liveid>/poweron').json()
+            url = '/device/<liveid>/poweron'
+            params = None
+            if self._ip:
+                params = { 'addr': self._ip }
+            response = self.get(url, params=params).json()
             if not response.get('success'):
                 _LOGGER.error('Failed to poweron {0}'.format(self.liveid))
                 return None
@@ -554,7 +558,7 @@ class XboxOneDevice(MediaPlayerDevice):
         if playback_state:
             state = playback_state
         elif self._xboxone.connected or self._xboxone.available:
-            if self._xboxone.active_app_type not in ['Application', 'App'] or self._xboxone.active_app == 'Home':
+            if self._xboxone.active_app_type in ['Application', 'App'] or self._xboxone.active_app == 'Home':
                 state = STATE_ON
             else:
                 state = STATE_UNKNOWN
