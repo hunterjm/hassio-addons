@@ -9,15 +9,18 @@ CREDITS:
 - Original code: https://github.com/home-assistant/home-assistant/blob/dev/homeassistant/components/media_player/firetv.py
 """
 import logging
-
+import functools
 import requests
 import voluptuous as vol
 from urllib.parse import urljoin
 
 from homeassistant.components.media_player import (
-    SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK, PLATFORM_SCHEMA,
+    MediaPlayerDevice, PLATFORM_SCHEMA)
+
+from homeassistant.components.media_player.const import (
+    SUPPORT_NEXT_TRACK, SUPPORT_PAUSE, SUPPORT_PREVIOUS_TRACK,
     SUPPORT_SELECT_SOURCE, SUPPORT_TURN_OFF, SUPPORT_TURN_ON,
-    SUPPORT_VOLUME_STEP, SUPPORT_VOLUME_MUTE, SUPPORT_PLAY, MediaPlayerDevice,
+    SUPPORT_VOLUME_STEP, SUPPORT_VOLUME_MUTE, SUPPORT_PLAY,
     MEDIA_TYPE_MUSIC, MEDIA_TYPE_VIDEO, MEDIA_TYPE_TVSHOW, MEDIA_TYPE_CHANNEL)
 from homeassistant.const import (
     STATE_IDLE, STATE_OFF, STATE_PAUSED, STATE_PLAYING, STATE_UNKNOWN, STATE_ON,
@@ -33,7 +36,7 @@ SUPPORT_XBOXONE = SUPPORT_PAUSE | \
     SUPPORT_NEXT_TRACK | SUPPORT_SELECT_SOURCE | SUPPORT_PLAY | \
     SUPPORT_VOLUME_STEP | SUPPORT_VOLUME_MUTE
 
-REQUIRED_SERVER_VERSION = '0.9.6'
+REQUIRED_SERVER_VERSION = '0.9.8'
 
 DEFAULT_SSL = False
 DEFAULT_HOST = 'localhost'
@@ -312,7 +315,11 @@ class XboxOne:
 
     def poweron(self):
         try:
-            response = self.get('/device/<liveid>/poweron').json()
+            url = '/device/<liveid>/poweron'
+            params = None
+            if self._ip:
+                params = { 'addr': self._ip }
+            response = self.get(url, params=params).json()
             if not response.get('success'):
                 _LOGGER.error('Failed to poweron {0}'.format(self.liveid))
                 return None
@@ -542,7 +549,7 @@ class XboxOneDevice(MediaPlayerDevice):
         if playback_state:
             state = playback_state
         elif self._xboxone.connected or self._xboxone.available:
-            if self._xboxone.active_app_type not in ['Application', 'App'] or self._xboxone.active_app == 'Home':
+            if self._xboxone.active_app_type in ['Application', 'App'] or self._xboxone.active_app == 'Home':
                 state = STATE_ON
             else:
                 state = STATE_UNKNOWN

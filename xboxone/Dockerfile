@@ -17,6 +17,6 @@ RUN apk add --no-cache jq gcc musl-dev python3-dev libffi-dev openssl-dev python
     if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
     rm -r /root/.cache
 
-RUN pip3 install xbox-smartglass-rest==0.9.6
+RUN pip3 install xbox-smartglass-rest==0.9.8
 
 CMD [ "/run.sh" ]
