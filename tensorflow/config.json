@@ -7,7 +7,7 @@
   "url": "https://github.com/hunterjm/hassio-addons/tree/master/tensorflow",
   "startup": "once",
   "boot": "manual",
-  "image": "hunterjm/{arch}-addon-xboxone",
+  "image": "hunterjm/{arch}-addon-tensorflow",
   "map": ["config:rw"],
   "options": {},
   "schema": {}
