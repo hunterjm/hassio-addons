@@ -1,0 +1,14 @@
+{
+  "name": "TensorFlow Installer",
+  "version": "1.0.0",
+  "slug": "tensorflow",
+  "description": "TensorFlow installer for Home Assistant.",
+  "arch": ["amd64"],
+  "url": "https://github.com/hunterjm/hassio-addons/tree/master/tensorflow",
+  "startup": "once",
+  "boot": "manual",
+  "image": "hunterjm/{arch}-addon-xboxone",
+  "map": ["config:rw"],
+  "options": {},
+  "schema": {}
+}
