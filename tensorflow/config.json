@@ -1,6 +1,6 @@
 {
   "name": "TensorFlow Installer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "slug": "tensorflow",
   "description": "TensorFlow installer for Home Assistant.",
   "arch": ["amd64"],
