@@ -115,6 +115,7 @@ class XboxOne:
             return None
 
         controls = volume_controls.get('avr') or volume_controls.get('tv')
+
         if not controls:
             return None
 
@@ -406,7 +407,7 @@ class XboxOne:
         if not self._volume_controls:
             return None
 
-        url = self._volume_controls.get(command)
+        url = self.volume_controls.get(command)
 
         if not url:
             return None
