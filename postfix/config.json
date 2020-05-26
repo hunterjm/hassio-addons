@@ -15,7 +15,7 @@
     },
     "options": {
       "forward": [{"from": "testi@testo.com", "password": "test", "to": ["test@test.com"]}],
-      "domain": "mail.test.com",
+      "domain": "test.com",
       "certfile": "fullchain.pem",
       "keyfile": "privkey.pem"
     },
@@ -24,5 +24,6 @@
       "domain": "str",
       "certfile": "str",
       "keyfile": "str"
-    }
+    },
+    "image": "hunterjm/{arch}-addon-postfix"
   }
