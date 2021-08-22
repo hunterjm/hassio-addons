@@ -1,2 +1,2 @@
 ARG BUILD_ARCH
-FROM hunterjm/frigate:recording-clips
+FROM blakeblackshear/frigate:0.9.0-beta2-${BUILD_ARCH}
