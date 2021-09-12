@@ -1,10 +1,10 @@
 {
   "name": "Frigate NVR Beta",
-  "version": "1.14-beta2",
+  "version": "2.1-beta",
   "panel_icon": "mdi:cctv",
-  "slug": "frigate",
+  "slug": "frigate-beta-custom-model",
   "description": "NVR with realtime local object detection for IP cameras",
-  "url": "https://github.com/blakeblackshear/frigate/pull/1352",
+  "url": "https://github.com/blakeblackshear/frigate/pull/1763",
   "startup": "application",
   "boot": "auto",
   "webui": "http://[HOST]:[PORT:5000]/",
@@ -24,6 +24,8 @@
   "devices": [
     "/dev/dri/renderD128",
     "/dev/apex_0",
+    "/dev/apex_1",
+    "/dev/apex_2",
     "/dev/dri/card0",
     "/dev/vchiq"
   ],

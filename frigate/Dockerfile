@@ -1,2 +1,2 @@
 ARG BUILD_ARCH
-FROM hunterjm/frigate:recording-clips
+FROM hunterjm/frigate:custom-model
